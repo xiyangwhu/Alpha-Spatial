@@ -1,0 +1,13 @@
+AlphaSpatial
+
+AlphaSpatial code and fine-tuned model modifications are distributed under the
+Apache License, Version 2.0.
+
+The model derives from Qwen3.5-2B, Copyright 2026 Alibaba Cloud, distributed under
+Apache License 2.0. AlphaSpatial includes domain adaptation, spatially supervised
+fine-tuning and a gene-extended tokenizer. Upstream attribution is retained in
+UPSTREAM_QWEN_LICENSE.txt (in metadata/ within the code package).
+
+Demonstration H&E images derive from TCIA HER2-TUMOR-ROIS (CC BY 4.0), not Apache
+2.0. See metadata/THIRD_PARTY_NOTICES.md in the accompanying code capsule for
+source attribution and image transformations. No endorsement is implied.

@@ -1,0 +1,12 @@
+# Principal dependencies for the supplied inference and statistical workflows.
+--extra-index-url https://download.pytorch.org/whl/cu130
+vllm==0.21.0
+transformers==5.9.0
+tokenizers==0.22.2
+torch==2.11.0+cu130
+Pillow==11.3.0
+numpy==2.4.6
+pandas==2.3.3
+scipy==1.17.1
+safetensors==0.5.3
+huggingface-hub==1.8.0

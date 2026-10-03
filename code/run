@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+CAPSULE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DATA_ROOT="${AS_DATA_ROOT:-$CAPSULE_ROOT/data}"
+RESULT_ROOT="${AS_RESULTS_ROOT:-$CAPSULE_ROOT/results}"
+MODEL_DIR="${AS_MODEL_DIR:-$DATA_ROOT/AlphaSpatial-multitissue-v1}"
+PYTHON_BIN="${AS_PYTHON:-python}"
+export PYTHONDONTWRITEBYTECODE=1
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+export VLLM_WORKER_MULTIPROC_METHOD=spawn
+export VLLM_USE_FLASHINFER_SAMPLER=0
+export OPENBLAS_NUM_THREADS=1
+export OMP_NUM_THREADS=2
+if [ -d "$RESULT_ROOT" ] && [ -n "$(ls -A "$RESULT_ROOT")" ]; then
+  echo "Output directory is not empty. Set AS_RESULTS_ROOT to a new directory." >&2
+  exit 1
+fi
+test -f "$MODEL_DIR/model.safetensors"
+"$PYTHON_BIN" "$CAPSULE_ROOT/code/infer.py" validate --requests "$DATA_ROOT/inference_demo/requests.jsonl"
+mkdir -p "$RESULT_ROOT"
+export XDG_CACHE_HOME="${AS_CACHE_ROOT:-$CAPSULE_ROOT/.cache}"
+export HF_HOME="$XDG_CACHE_HOME/huggingface"
+export VLLM_CACHE_ROOT="$XDG_CACHE_HOME/vllm"
+export TRITON_CACHE_DIR="$XDG_CACHE_HOME/triton"
+export TORCHINDUCTOR_CACHE_DIR="$XDG_CACHE_HOME/torchinductor"
+export TMPDIR="$XDG_CACHE_HOME/tmp"
+mkdir -p "$TMPDIR"
+"$PYTHON_BIN" "$CAPSULE_ROOT/code/infer.py" run \
+  --requests "$DATA_ROOT/inference_demo/requests.jsonl" \
+  --model "$MODEL_DIR" --config "$DATA_ROOT/inference_demo/inference_config.json" \
+  --output "$RESULT_ROOT/predictions.jsonl"
+"$PYTHON_BIN" "$CAPSULE_ROOT/code/verify_predictions.py" \
+  --data "$DATA_ROOT/inference_demo" --predictions "$RESULT_ROOT/predictions.jsonl" \
+  --output "$RESULT_ROOT/inference_check.json"
+"$PYTHON_BIN" "$CAPSULE_ROOT/code/export_expression.py" \
+  --predictions "$RESULT_ROOT/predictions.jsonl" \
+  --genes "$DATA_ROOT/inference_demo/target_genes.json" --output "$RESULT_ROOT/expression"
+"$PYTHON_BIN" "$CAPSULE_ROOT/code/reproduce_response.py" \
+  --data "$DATA_ROOT/patient_endpoints" --output "$RESULT_ROOT/response_statistics"
+"$PYTHON_BIN" "$CAPSULE_ROOT/code/complete_run.py" --results "$RESULT_ROOT"

@@ -1,0 +1,29 @@
+{
+  "source_dataset": "HER2-TUMOR-ROIS",
+  "source_doi": "10.7937/E65C-AM96",
+  "source_url": "https://www.cancerimagingarchive.net/collection/her2-tumor-rois/",
+  "image_license": "CC BY 4.0",
+  "source_specimen": "O09-03495",
+  "source_slide": "O09-03495.svs",
+  "cohort": "Yale trastuzumab response",
+  "selection": "First processed response-cohort source ID, first two occupied tiles, up to eight requests per tile; no outcome or prediction selection.",
+  "image_transform": "Level-0 read, white alpha composite, RGB, bilinear resize to512; lossless PNG of actual inference RGB pixels.",
+  "bbox_convention": "Inclusive mask pixel extents, int(pixel/512*1000), xyxy.",
+  "image_size_px": [
+    512,
+    512
+  ],
+  "requests": 12,
+  "tiles": 2,
+  "coordinates": "slide_x_um and slide_y_um in micrometres; read rectangle in native level-0 pixels.",
+  "interpretation": "Functional inference example. Archived outputs are model predictions, NOT measured expression.",
+  "released_model_id": "AlphaSpatial-multitissue-v1",
+  "production_parameters": {
+    "max_tokens": 2048,
+    "max_model_len": 8192,
+    "temperature": 0,
+    "seed": 20260927,
+    "seqs": 512,
+    "gpu_memory_utilization": 0.92
+  }
+}
